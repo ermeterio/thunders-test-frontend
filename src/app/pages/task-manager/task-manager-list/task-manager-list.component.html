@@ -1,0 +1,94 @@
+<div class="container_task_manager">
+	<div class="box-list">	
+		<div class="form">
+			<form [formGroup]="form">
+				<div class="row g-3">
+					<div class="col-md-4">
+						<label>Responsável</label>
+						<input type="text" class="form-control" placeholder="Responsável" aria-label="Responsável" formControlName="responsible">
+						<label *ngIf="validateForm && form.controls['responsible'].value == ''" class="mandatory">Este campo é obrigatório </label>
+					</div>
+					<div class="col-md-4">
+						<label>Descrição</label>
+						<input type="text" class="form-control" placeholder="Descrição" aria-label="Descrição" formControlName="description">
+						<label *ngIf="validateForm && form.controls['description'].value == ''" class="mandatory">Este campo é obrigatório </label>
+					</div>
+					<div class="col-md-4">
+						<label>Status</label>
+						<select class="form-select" aria-label="Selecione o Status" formControlName="status">
+							<option [selected]="true" value="0">Selecione</option>
+							<option value="1">A fazer</option>
+							<option value="2">Fazendo</option>
+							<option value="3">Feito</option>
+						</select>
+						<label *ngIf="validateForm && form.controls['status'].value == 0" class="mandatory">Este campo é obrigatório </label>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" (click)="searchTask()"> Buscar</button>
+			<button type="button" class="btn btn-primary" (click)="createTask()"> Salvar</button>		
+		</div>		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Responsável</th>
+					<th scope="col">Status</th>
+					<th scope="col">Descrição</th>
+					<th scope="col">Ações</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (task of tasks; track task.id) {
+					<tr>
+						<th scope="row">{{ task.id }}</th>
+						<td>{{ task.responsible }}</td>
+						<td>{{ getStatus(task.status) }}</td>
+						<td>{{ task.description }}</td>
+						<td>
+							<button type="button" class="btn btn-primary" (click)="open(contentEdit, task.id)"> Editar</button>
+							<button type="button" class="btn btn-danger" (click)="open(contentDelete, task.id)"> Remover </button>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		
+		<div class="d-flex justify-content-between p-2">
+			<ngb-pagination
+				[collectionSize]="tasks.length"
+				[(page)]="page"
+				[pageSize]="pageSize"
+				(pageChange)="searchTask()"
+			>
+			</ngb-pagination>
+		
+			<select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="searchTask()">
+				<option [ngValue]="10">10 registros por página</option>
+				<option [ngValue]="20">20 registros por página</option>
+				<option [ngValue]="30">30 registros por página</option>
+			</select>
+		</div>
+	</div>
+	<ng-template #contentEdit let-modal>
+		<app-task-manager-edit [task]="this.selectedTask" (notify)="searchTask()"></app-task-manager-edit>
+	</ng-template>
+
+	<ng-template #contentDelete let-modal style="padding: 5%;">
+		<div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title">Excluir registro</h5>
+			  <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="this.modalService.dismissAll()" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+			  <p>Deseja mesmo excluir?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" (click)="this.modalService.dismissAll()" >Cancelar</button>
+			  	<button type="button" class="btn btn-primary" (click)="removeTask();this.modalService.dismissAll()">Confirmar</button>
+			</div>
+		</div>
+	</ng-template>
+</div>

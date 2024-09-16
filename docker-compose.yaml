@@ -1,0 +1,7 @@
+
+services:
+  thunders_task_manager_front:
+    container_name: thunders_task_manager_front
+    image: ermeterio/thunders_task_manager_front:1.2.0
+    ports:
+      - "4200:4200"
